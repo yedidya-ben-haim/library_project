@@ -46,6 +46,7 @@ library-api/
 
 ```bash
 docker run --name mysql -e MYSQL_ROOT_PASSWORD=yourpassword -e MYSQL_DATABASE=library_db -p 3306:3306 -d mysql:latest
+
 ```
 
 ---
