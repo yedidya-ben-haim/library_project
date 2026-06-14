@@ -161,9 +161,28 @@ class BookDB:
 
         return total_available
 
+    def count_borrowed_books(self):
+        """
+            Returns the number of books with is_available=False
+        """
+        conn = get_connection()
+        cursor = conn.cursor(dictionary=True)
+
+        query = """SELECT COUNT(*) as total_borrowed
+                            FROM books
+                            WHERE is_available=False;
+                        """
+        cursor.execute(query)
+        row = cursor.fetchone()
+        total_borrowed = row["total_borrowed"]
+
+        cursor.close()
+        conn.close()
+
+        return total_borrowed
 
 
 data = {"title":"book", "genre":"Science"}
 
 book_db = BookDB()
-print(book_db.count_available_books())
+print(book_db.count_borrowed_books())
