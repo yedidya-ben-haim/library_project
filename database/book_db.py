@@ -55,6 +55,23 @@ class BookDB:
         return rows
 
 
+    def get_book_by_id(self, id):
+        """
+            Returns one book by ID or None
+        """
+        conn = get_connection()
+        cursor = conn.cursor(dictionary=True)
+
+        query = f"SELECT * FROM books WHERE ID = {id}"
+
+        cursor.execute(query)
+        row = cursor.fetchone()
+
+        cursor.close()
+        conn.close()
+
+        return row
+
 
 book_db = BookDB()
-print(book_db.get_all_books())
+print(book_db.get_book_by_id(2))
