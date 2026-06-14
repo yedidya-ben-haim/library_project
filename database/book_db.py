@@ -100,7 +100,32 @@ class BookDB:
 
         return is_update
 
+    def set_available(self, id, val, member_id):
+        """
+        Updates the is_available and borrowed_by_member_id fields,
+        based on the book ID ang member ID sent,
+        returns TRUE if done
+        """
+        conn = get_connection()
+        cursor = conn.cursor(dictionary=True)
+        is_update = False
 
+        cursor.execute("SELECT is_available FROM books WHERE id = %s", (id,))
+        row = cursor.fetchone()
+        is_available = row["is_available"]
+
+
+        if val != is_available:
+            query = f"UPDATE books SET is_available=%s, borrowed_by_member_id=%s WHERE id = %s"
+            cursor.execute(query, (val, member_id, id))
+
+            conn.commit()
+            is_update = cursor.rowcount > 0
+
+        cursor.close()
+        conn.close()
+
+        return is_update
 
 
 
@@ -108,4 +133,4 @@ class BookDB:
 data = {"title":"book", "genre":"Science"}
 
 book_db = BookDB()
-print(book_db.update_book(10,data))
+print(book_db.set_available(4, False, 2))
