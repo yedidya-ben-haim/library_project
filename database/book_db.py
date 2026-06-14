@@ -62,7 +62,7 @@ class BookDB:
         conn = get_connection()
         cursor = conn.cursor(dictionary=True)
 
-        query = f"SELECT * FROM books WHERE ID = {id}"
+        query = f"SELECT * FROM books WHERE id = {id}"
 
         cursor.execute(query)
         row = cursor.fetchone()
@@ -73,5 +73,39 @@ class BookDB:
         return row
 
 
+    def update_book(self, id, data: dict):
+        """
+            Updates a book by ID and submitted fields
+            Returns TRUE if updated
+        """
+
+        conn = get_connection()
+        cursor = conn.cursor(dictionary=True)
+
+        in_part = [f"{key}=%s" for key in data.keys()]
+        in_str = ", ".join(in_part)
+
+        data_value = list(data.values()) + [id]
+
+
+        query = f"UPDATE books SET {in_str} WHERE id = %s"
+
+        cursor.execute(query, data_value)
+
+        conn.commit()
+        is_update = cursor.rowcount > 0
+
+        cursor.close()
+        conn.close()
+
+        return is_update
+
+
+
+
+
+
+data = {"title":"book", "genre":"Science"}
+
 book_db = BookDB()
-print(book_db.get_book_by_id(2))
+print(book_db.update_book(10,data))
