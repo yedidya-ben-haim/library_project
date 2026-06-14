@@ -7,8 +7,6 @@ class BookDB:
     """
     Responsible for all SQL operations against the books table.
     """
-    def __init__(self):
-        pass
 
     def create_book(self, data: dict):
         """
@@ -36,7 +34,6 @@ class BookDB:
 
         return is_create
 
-
     def get_all_books(self):
         """
             Returns the list of all books
@@ -54,7 +51,6 @@ class BookDB:
 
         return rows
 
-
     def get_book_by_id(self, id):
         """
             Returns one book by ID or None
@@ -71,7 +67,6 @@ class BookDB:
         conn.close()
 
         return row
-
 
     def update_book(self, id, data: dict):
         """
@@ -111,7 +106,7 @@ class BookDB:
         cursor = conn.cursor(dictionary=True)
         is_update = False
 
-        cursor.execute("SELECT is_available FROM books WHERE id = %s", (id,))
+        cursor.execute("SELECT is_available FROM books WHERE id = %s;", (id,))
         row = cursor.fetchone()
         is_available = row["is_available"]
 
@@ -135,19 +130,40 @@ class BookDB:
         conn = get_connection()
         cursor = conn.cursor(dictionary=True)
 
-        query = f"SELECT * FROM books"
+        query = f"SELECT COUNT(*) as total_book FROM books;"
 
         cursor.execute(query)
-        rows = cursor.fetchall()
-        num_of_books = len(rows)
+        rows = cursor.fetchone()
+        total_book = rows["total_book"]
 
         cursor.close()
         conn.close()
 
-        return num_of_books
+        return total_book
+
+    def count_available_books(self):
+        """
+            Returns the number of books with is_available=True
+        """
+        conn = get_connection()
+        cursor = conn.cursor(dictionary=True)
+
+        query = """SELECT COUNT(*) as total_available 
+                    FROM books
+                    WHERE is_available=True;
+                """
+        cursor.execute(query)
+        row = cursor.fetchone()
+        total_available = row["total_available"]
+
+        cursor.close()
+        conn.close()
+
+        return total_available
+
 
 
 data = {"title":"book", "genre":"Science"}
 
 book_db = BookDB()
-print(book_db.count_total_books())
+print(book_db.count_available_books())
