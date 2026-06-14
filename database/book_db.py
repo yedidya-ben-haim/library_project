@@ -104,6 +104,7 @@ class BookDB:
         """
         Updates the is_available and borrowed_by_member_id fields,
         based on the book ID ang member ID sent,
+        Checking if available,
         returns TRUE if done
         """
         conn = get_connection()
@@ -127,10 +128,26 @@ class BookDB:
 
         return is_update
 
+    def count_total_books(self):
+        """
+            Returns the total number of books in the database.
+        """
+        conn = get_connection()
+        cursor = conn.cursor(dictionary=True)
 
+        query = f"SELECT * FROM books"
+
+        cursor.execute(query)
+        rows = cursor.fetchall()
+        num_of_books = len(rows)
+
+        cursor.close()
+        conn.close()
+
+        return num_of_books
 
 
 data = {"title":"book", "genre":"Science"}
 
 book_db = BookDB()
-print(book_db.set_available(4, False, 2))
+print(book_db.count_total_books())
