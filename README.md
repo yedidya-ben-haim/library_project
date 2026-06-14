@@ -77,13 +77,13 @@ docker run --name mysql -e MYSQL_ROOT_PASSWORD=yourpassword -e MYSQL_DATABASE=li
 
 ### Table: `members`
 
-| Column Name    | Data Type   | Constraints       | Description              |
-|----------------|-------------|-------------------|--------------------------|
-| id             | PRIMARY KEY | AUTO_INCREMENT    | Primary key              |
-| name           | VARCHAR(50) | NOT NULL          | Member's name            |
-| email          | VARCHAR(50) | UNIQUE, ,NOT NULL | Email address            |
-| is_active      | BOOLEAN     | NOT NULL          | Is the member active     |
-| total_borrows  | INT         | NOT NULL          | Total number of borrows  |
+| Column Name    | Data Type   | Constraints      | Description              |
+|----------------|-------------|------------------|--------------------------|
+| id             | PRIMARY KEY | AUTO_INCREMENT   | Primary key              |
+| name           | VARCHAR(50) | NOT NULL         | Member's name            |
+| email          | VARCHAR(50) | UNIQUE, NOT NULL | Email address            |
+| is_active      | BOOLEAN     | NOT NULL         | Is the member active     |
+| total_borrows  | INT         | NOT NULL         | Total number of borrows  |
 
 
 ---
