@@ -181,8 +181,30 @@ class BookDB:
 
         return total_borrowed
 
+    def count_by_genre(self, genre):
+        """
+            Returns the number of books by genre
+        """
+        conn = get_connection()
+        cursor = conn.cursor(dictionary=True)
+
+        query = """SELECT genre,COUNT(*) as total_genre
+                                    FROM books
+                                    WHERE genre=%s;
+                                """
+        cursor.execute(query, (genre,))
+        row = cursor.fetchone()
+        total_genre = row["total_genre"]
+
+        cursor.close()
+        conn.close()
+
+        return total_genre
+
+
+
 
 data = {"title":"book", "genre":"Science"}
 
 book_db = BookDB()
-print(book_db.count_borrowed_books())
+print(book_db.count_by_genre("1"))
