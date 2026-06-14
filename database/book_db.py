@@ -1,6 +1,6 @@
-from db_connection import get_connection
+from db_connection import DbConnection
 
-
+connection_db = DbConnection()
 
 
 class BookDB:
@@ -16,7 +16,7 @@ class BookDB:
 
         Returns TRUE if the book was created and inserted into the table
         """
-        conn = get_connection()
+        conn = connection_db.get_connection()
         cursor = conn.cursor(dictionary=True)
 
         data_value = (data["title"], data["author"], data["genre"])
@@ -38,7 +38,7 @@ class BookDB:
         """
             Returns the list of all books
         """
-        conn = get_connection()
+        conn = connection_db.get_connection()
         cursor = conn.cursor(dictionary=True)
 
         query = """SELECT * FROM books;"""
@@ -55,7 +55,7 @@ class BookDB:
         """
             Returns one book by ID or None
         """
-        conn = get_connection()
+        conn = connection_db.get_connection()
         cursor = conn.cursor(dictionary=True)
 
         query = f"SELECT * FROM books WHERE id = {id}"
@@ -74,7 +74,7 @@ class BookDB:
             Returns TRUE if updated
         """
 
-        conn = get_connection()
+        conn = connection_db.get_connection()
         cursor = conn.cursor(dictionary=True)
 
         in_part = [f"{key}=%s" for key in data.keys()]
@@ -102,7 +102,7 @@ class BookDB:
         Checking if available,
         returns TRUE if done
         """
-        conn = get_connection()
+        conn = connection_db.get_connection()
         cursor = conn.cursor(dictionary=True)
         is_update = False
 
@@ -127,7 +127,7 @@ class BookDB:
         """
             Returns the total number of books in the database.
         """
-        conn = get_connection()
+        conn = connection_db.get_connection()
         cursor = conn.cursor(dictionary=True)
 
         query = f"SELECT COUNT(*) as total_book FROM books;"
@@ -145,7 +145,7 @@ class BookDB:
         """
             Returns the number of books with is_available=True
         """
-        conn = get_connection()
+        conn = connection_db.get_connection()
         cursor = conn.cursor(dictionary=True)
 
         query = """SELECT COUNT(*) as total_available 
@@ -165,7 +165,7 @@ class BookDB:
         """
             Returns the number of books with is_available=False
         """
-        conn = get_connection()
+        conn = connection_db.get_connection()
         cursor = conn.cursor(dictionary=True)
 
         query = """SELECT COUNT(*) as total_borrowed
@@ -185,7 +185,7 @@ class BookDB:
         """
             Returns the number of books by genre
         """
-        conn = get_connection()
+        conn = connection_db.get_connection()
         cursor = conn.cursor(dictionary=True)
 
         query = """SELECT genre,COUNT(*) as total_genre
@@ -201,10 +201,29 @@ class BookDB:
 
         return total_genre
 
+    def count_active_borrows_by_member(self, member_id):
+        """
+            Count how many books the member currently owns to enforce the 3-book rule
+        """
+        conn = connection_db.get_connection()
+        cursor = conn.cursor(dictionary=True)
+
+        query = """SELECT COUNT(*) as borrowed_books
+                    FROM books
+                    WHERE borrowed_by_member_id=%s;
+                """
+        cursor.execute(query, (member_id,))
+        row = cursor.fetchone()
+        borrowed_books = row["borrowed_books"]
+
+        cursor.close()
+        conn.close()
+
+        return borrowed_books
 
 
 
-data = {"title":"book", "genre":"Science"}
+data = {"title":"book2", "genre":"Science", "author":"harry"}
 
 book_db = BookDB()
-print(book_db.count_by_genre("1"))
+print(book_db.count_active_borrows_by_member(2))
