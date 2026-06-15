@@ -4,6 +4,7 @@ from database import book_db, member_db
 from pydantic import BaseModel
 from typing import Literal
 
+
 mang_book = book_db.BookDB()
 mang_member = member_db.MemberDB()
 router = APIRouter()
@@ -35,7 +36,6 @@ def get_book_by_id(id: int):
     else:
         raise HTTPException(status_code=404, detail="Book not found")
 
-
 @router.post("/books", status_code=201)
 def create_book(data: CreateBook):
     data = data.model_dump()
@@ -57,7 +57,6 @@ def update_book(id: int,data: UpdateBook):
 
 @router.put("/books/{id}/borrow/{member_id}")
 def borrow_book(id: int, member_id: int):
-    print("HI")
     book_to_borrow = mang_book.get_book_by_id(id)
     borrow_member = mang_member.get_member_by_id(member_id)
 
@@ -74,4 +73,16 @@ def borrow_book(id: int, member_id: int):
     mang_book.set_available(id,0, member_id)
     mang_member.increment_borrows(member_id)
 
+@router.put("/books/{id}/return/{member_id}")
+def return_book(id: int, member_id: int):
+    book_to_return= mang_book.get_book_by_id(id)
+    return_member = mang_member.get_member_by_id(member_id)
+
+    # chack if id and member_id exists
+    if not book_to_return or not return_member:
+        raise HTTPException(status_code=404, detail="The member ID or book does not exist")
+    if not return_member["is_active"]:
+        raise HTTPException(status_code=400, detail="Member is not active")
+
+    mang_book.set_available(id, 1, None)
 
