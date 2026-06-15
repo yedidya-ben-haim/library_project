@@ -122,10 +122,25 @@ class MemberDB:
 
         return is_update
 
+    def count_active_members(self):
+        """
+            Returns the number of members with is_active=True
+        """
+        conn = connection_db.get_connection()
+        cursor = conn.cursor(dictionary=True)
 
+        query = """SELECT COUNT(*) as total_active
+                            FROM members
+                            WHERE is_active=True;
+                        """
+        cursor.execute(query)
+        row = cursor.fetchone()
+        total_active = row["total_active"]
 
-    def count_active_members():
-        pass
+        cursor.close()
+        conn.close()
+
+        return total_active
 
     def get_top_member():
         pass
@@ -136,4 +151,4 @@ data = {"name":"yedidya",
        "email":"bhyedidya@gmail.com"}
 
 member_db = MemberDB()
-print(member_db.activate_member(1))
+print(member_db.count_active_members())
