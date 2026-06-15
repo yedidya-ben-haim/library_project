@@ -39,7 +39,6 @@ class MemberDB:
 
         return is_create
 
-
     def get_all_members(self):
         """
             Returns the list of all members
@@ -102,8 +101,9 @@ class MemberDB:
 
         return is_update
 
-    def deactivate_member(id):
-        pass
+    def deactivate_member(self, id):
+        is_update = self.update_member(id,{"is_active": 0})
+        return is_update
 
     def activate_member(self, id):
         pass
@@ -135,4 +135,4 @@ data = {"name":"yedidya",
        "email":"bhyedidya@gmail.com"}
 
 member_db = MemberDB()
-print(member_db.create_member(data))
+print(member_db.deactivate_member(1))
