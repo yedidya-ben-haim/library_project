@@ -94,8 +94,16 @@ class MemberDB:
         pass
 
     def increment_borrows(self, id):
-        pass
+        """
+            Increases total_borrows by 1
+            Return true if updated
+        """
+        member = self.get_member_by_id(id)
+        new_borrows = member["total_borrows"] + 1
+        data = {"total_borrows": new_borrows}
+        is_update = self.update_member(id, data)
 
+        return is_update
 
 
 
@@ -110,4 +118,4 @@ data = {"name":"ye",
        "email":"a@gmail.com"}
 
 member_db = MemberDB()
-print(member_db.update_member(1,data))
+print(member_db.increment_borrows(1))
