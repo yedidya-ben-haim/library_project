@@ -56,3 +56,12 @@ def deactivate_member(id: int):
         raise HTTPException(status_code=404, detail="Member not found")
 
     return is_update
+
+@router.put("/members/{id}/activate")
+def activate_member(id: int):
+    try:
+        is_update = manage_members.activate_member(id)
+    except KeyError:
+        raise HTTPException(status_code=404, detail="Member not found")
+
+    return is_update
