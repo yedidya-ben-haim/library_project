@@ -12,6 +12,14 @@ class CreateBook(BaseModel):
     author: str
     genre: Literal["Fiction", "Non-Fiction", "Science", "History", "Other"]
 
+class UpdateBook(BaseModel):
+    title: str | None = None
+    author: str | None = None
+    genre: Literal["Fiction", "Non-Fiction", "Science", "History", "Other"] | None = None
+    is_available: bool | None = None
+    borrowed_by_member_id: int | None = None
+
+
 @router.get("/books")
 def get_all_books():
     return new_book.get_all_books()
@@ -33,3 +41,14 @@ def create_book(data: CreateBook):
     if not book_created:
         raise HTTPException(status_code=400, detail="The book was not created.")
 
+@router.put("/books/{id}")
+def update_book(id: int,data: UpdateBook):
+    data = data.model_dump(exclude_unset=True)
+    print(data)
+    if data:
+        try:
+            new_book.update_book(id, data)
+        except KeyError:
+            raise HTTPException(status_code=404, detail="The book does not exist")
+    else:
+        HTTPException(status_code=400, detail="The book has not been updated")
