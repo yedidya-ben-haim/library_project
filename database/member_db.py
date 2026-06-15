@@ -42,7 +42,7 @@ class MemberDB:
     def get_all_members():
         pass
 
-    def get_member_by_id(id):
+    def get_member_by_id(self, id):
         """
             Returns one member by ID or None
         """
@@ -59,11 +59,45 @@ class MemberDB:
 
         return row
 
-    def update_member(id, data):
-        pass
+    def update_member(self, id, data):
+        """
+            Updates a member by ID and submitted fields
+            Returns TRUE if updated
+        """
+        if not self.get_member_by_id(id):
+            raise KeyError
+
+        conn = connection_db.get_connection()
+        cursor = conn.cursor(dictionary=True)
+
+        in_part = [f"{key}=%s" for key in data.keys()]
+        in_str = ", ".join(in_part)
+
+        data_value = list(data.values()) + [id]
+
+        query = f"UPDATE members SET {in_str} WHERE id = %s"
+
+        cursor.execute(query, data_value)
+
+        conn.commit()
+        is_update = cursor.rowcount > 0
+
+        cursor.close()
+        conn.close()
+
+        return is_update
 
     def deactivate_member(id):
         pass
+
+    def activate_member(self, id):
+        pass
+
+    def increment_borrows(self, id):
+        pass
+
+
+
 
     def count_active_members():
         pass
@@ -71,10 +105,9 @@ class MemberDB:
     def get_top_member():
         pass
 
-    def
 
-data = {"name":"yedidya",
-       "email":"bhyedidya@gmail.com"}
+data = {"name":"ye",
+       "email":"a@gmail.com"}
 
 member_db = MemberDB()
-print(member_db.create_member(data))
+print(member_db.update_member(1,data))
