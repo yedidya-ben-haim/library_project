@@ -38,12 +38,26 @@ class MemberDB:
 
         return is_create
 
+
     def get_all_members():
         pass
 
     def get_member_by_id(id):
-        pass
+        """
+            Returns one member by ID or None
+        """
+        conn = connection_db.get_connection()
+        cursor = conn.cursor(dictionary=True)
 
+        query = f"SELECT * FROM members WHERE id = {id}"
+
+        cursor.execute(query)
+        row = cursor.fetchone()
+
+        cursor.close()
+        conn.close()
+
+        return row
 
     def update_member(id, data):
         pass
@@ -57,6 +71,7 @@ class MemberDB:
     def get_top_member():
         pass
 
+    def
 
 data = {"name":"yedidya",
        "email":"bhyedidya@gmail.com"}
