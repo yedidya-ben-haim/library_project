@@ -9,6 +9,10 @@ class CreateMember(BaseModel):
     name: str
     email: str
 
+class UpdateMember(BaseModel):
+    name: str | None = None
+    email: str | None = None
+
 
 @router.post("/members", status_code=201)
 def create_member(data: CreateMember):
@@ -21,5 +25,26 @@ def create_member(data: CreateMember):
         raise HTTPException(status_code=400, detail="Error adding members")
 
 
-@@router.get("/members")
+@router.get("/members")
+def all_members():
+    return manage_members.get_all_members()
+
+@router.get("/members/{id}")
+def get_member_by_id(id: int):
+    book = manage_members.get_member_by_id(id)
+    if book:
+        return book
+    else:
+        raise HTTPException(status_code=404, detail="Member not found")
+
+@router.put("/members/{id}")
+def update_member(id: int, data: UpdateMember):
+    data = data.model_dump(exclude_unset=True)
+
+    try:
+        is_update = manage_members.update_member(id, data)
+    except KeyError:
+        raise HTTPException(status_code=400, detail="Unable to update member")
+
+    return is_update
 
