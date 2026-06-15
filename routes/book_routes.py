@@ -1,9 +1,11 @@
+import uvicorn
 from fastapi import APIRouter, HTTPException
-from database import book_db
+from database import book_db, member_db
 from pydantic import BaseModel
 from typing import Literal
 
-new_book = book_db.BookDB()
+mang_book = book_db.BookDB()
+mang_member = member_db.MemberDB()
 router = APIRouter()
 
 
@@ -22,12 +24,12 @@ class UpdateBook(BaseModel):
 
 @router.get("/books")
 def get_all_books():
-    return new_book.get_all_books()
+    return mang_book.get_all_books()
 
 
 @router.get("/books/{id}")
 def get_book_by_id(id: int):
-    book = new_book.get_book_by_id(id)
+    book = mang_book.get_book_by_id(id)
     if book:
         return book
     else:
@@ -37,7 +39,7 @@ def get_book_by_id(id: int):
 @router.post("/books", status_code=201)
 def create_book(data: CreateBook):
     data = data.model_dump()
-    book_created = new_book.create_book(data)
+    book_created = mang_book.create_book(data)
     if not book_created:
         raise HTTPException(status_code=400, detail="The book was not created.")
 
@@ -47,8 +49,29 @@ def update_book(id: int,data: UpdateBook):
     print(data)
     if data:
         try:
-            new_book.update_book(id, data)
+            mang_book.update_book(id, data)
         except KeyError:
             raise HTTPException(status_code=404, detail="The book does not exist")
     else:
-        HTTPException(status_code=400, detail="The book has not been updated")
+        raise HTTPException(status_code=400, detail="The book has not been updated")
+
+@router.put("/books/{id}/borrow/{member_id}")
+def borrow_book(id: int, member_id: int):
+    print("HI")
+    book_to_borrow = mang_book.get_book_by_id(id)
+    borrow_member = mang_member.get_member_by_id(member_id)
+
+    # chack if id and member_id exists
+    if not book_to_borrow or not borrow_member:
+        raise HTTPException(status_code=404, detail="The member ID or book does not exist")
+    if not borrow_member["is_active"]:
+        raise HTTPException(status_code=400, detail="Member is not active")
+    if book_to_borrow["is_available"] == 0:
+        raise HTTPException(status_code=400, detail="Book is not available")
+    if mang_book.count_active_borrows_by_member(member_id) >= 3:
+        raise HTTPException(status_code=400, detail="Member has reached maximum borrows")
+
+    mang_book.set_available(id,0, member_id)
+    mang_member.increment_borrows(member_id)
+
+
