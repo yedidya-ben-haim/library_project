@@ -142,8 +142,24 @@ class MemberDB:
 
         return total_active
 
-    def get_top_member():
-        pass
+    def get_top_member(self):
+        """
+            Returns the friend with the highest total_borrows
+        """
+        conn = connection_db.get_connection()
+        cursor = conn.cursor(dictionary=True)
+
+        query = """SELECT id,total_borrows
+                    FROM members
+                    ORDER BY total_borrows DESC ;
+                """
+
+        cursor.execute(query)
+        row = cursor.fetchall()
+        cursor.close()
+        conn.close()
+
+        return row[0]
 
 
 
@@ -151,4 +167,4 @@ data = {"name":"yedidya",
        "email":"bhyedidya@gmail.com"}
 
 member_db = MemberDB()
-print(member_db.count_active_members())
+print(member_db.get_top_member())
