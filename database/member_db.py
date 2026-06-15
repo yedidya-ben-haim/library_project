@@ -106,7 +106,8 @@ class MemberDB:
         return is_update
 
     def activate_member(self, id):
-        pass
+        is_update = self.update_member(id, {"is_active": 1})
+        return is_update
 
     def increment_borrows(self, id):
         """
@@ -135,4 +136,4 @@ data = {"name":"yedidya",
        "email":"bhyedidya@gmail.com"}
 
 member_db = MemberDB()
-print(member_db.deactivate_member(1))
+print(member_db.activate_member(1))
