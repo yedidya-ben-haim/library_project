@@ -1,13 +1,14 @@
 from database.db_connection import DbConnection
-
+from logs import log_config
 connection_db = DbConnection()
+import logging
 
+logger = logging.getLogger(__name__)
 
 class MemberDB:
     """
-    Responsible for all SQL operations against the member table.
+        Responsible for all SQL operations against the members table.
     """
-
     def create_member(self, data: dict):
         """
         Creates a new members and inserts it into the table,
@@ -39,8 +40,22 @@ class MemberDB:
         return is_create
 
 
-    def get_all_members():
-        pass
+    def get_all_members(self):
+        """
+            Returns the list of all members
+        """
+        conn = connection_db.get_connection()
+        cursor = conn.cursor(dictionary=True)
+
+        query = """SELECT * FROM members;"""
+
+        cursor.execute(query)
+        rows = cursor.fetchall()
+
+        cursor.close()
+        conn.close()
+
+        return rows
 
     def get_member_by_id(self, id):
         """
@@ -99,6 +114,7 @@ class MemberDB:
             Return true if updated
         """
         member = self.get_member_by_id(id)
+        print(member)
         new_borrows = member["total_borrows"] + 1
         data = {"total_borrows": new_borrows}
         is_update = self.update_member(id, data)
@@ -114,8 +130,9 @@ class MemberDB:
         pass
 
 
-data = {"name":"ye",
-       "email":"a@gmail.com"}
+
+data = {"name":"yedidya",
+       "email":"bhyedidya@gmail.com"}
 
 member_db = MemberDB()
-print(member_db.increment_borrows(1))
+print(member_db.create_member(data))
